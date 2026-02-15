@@ -45,6 +45,26 @@ df_encoded["reason_description_insight_encoded"] = (
     df_encoded["reason_description_insight"].astype("category").cat.codes
 )
 
+# Feature Engineering: Create new features based on domain knowledge
+df_encoded["total_talk_time"] = (
+    df_encoded["avg_talk_time_seconds"] * df_encoded["num_calls"]
+)
+df_encoded["total_hold_time"] = (
+    df_encoded["avg_hold_time_seconds"] * df_encoded["num_calls"]
+)
+df_encoded["hold_ratio"] = df_encoded["avg_hold_time_seconds"] / (
+    df_encoded["avg_talk_time_seconds"] + 1e-6
+)
+df_encoded["hold_severity"] = df_encoded["max_hold_time"] / (
+    df_encoded["avg_hold_time_seconds"] + 1e-6
+)
+df_encoded["frustration_score"] = (
+    df_encoded["avg_hold_time_seconds"] * df_encoded["num_calls"]
+) / (df_encoded["avg_talk_time_seconds"] + 1e-6)
+df_encoded["engagement_score"] = df_encoded["total_talk_time"] / (
+    df_encoded["duration"] + 1e-6
+)
+
 # Split data into training and testing sets
 X = df_encoded.drop(
     columns=[
